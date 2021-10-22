@@ -209,6 +209,17 @@ Don't forget to give the project a star! Thanks again!
 <!-- LICENSE -->
 ## License
 
-Distributed under the MIT License. See `LICENSE.txt` for more information.
+Distributed under the BSD 2 License. See `LICENSE.txt` for more information.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
+
+## Acknowledgments
+
+<div align="center">
+   <a href="https://fdleurope.org/">
+    <img src="images/fdleuropeESA.png" alt="fdleurope">
+  </a>
+</div>
+
+
+This work is the result of the 2021 ESA Frontier Development Lab World Food Embeddings team. We are grateful to all organisers, mentors and sponsors for providing us this opportunity. We thank Google Cloud for providing computing and storage resources to complete this work.
