@@ -1,0 +1,2 @@
+_target_: satextractor.tiler.split_region_in_utm_tiles
+bbox_size: 10000 # meters

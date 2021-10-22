@@ -1,0 +1,13 @@
+Flask==2.0.1
+gunicorn==20.1.0
+google-cloud-storage
+rasterio
+zarr
+numpy
+attrs
+cattrs
+pystac
+pyproj
+gcsfs
+loguru
+scipy

@@ -1,0 +1,34 @@
+defaults:
+  - stac: gcp
+  - tiler: utm
+  - scheduler: utm
+  - deployer: gcp
+  - builder: gcp
+  - cloud: gcp
+  - preparer: gcp
+  - _self_
+tasks:
+  - build
+  - stac
+  - tile
+  - schedule
+  - prepare
+  - deploy
+dataset_name: cordoba
+output: ./outputs/${dataset_name}
+hydra:
+  run:
+    dir: .
+log_path: ${output}/main.log
+credentials: ${output}/token.json
+gpd_input: ${output}/${dataset_name}.geojson
+item_collection: ${output}/item_collection.geojson
+tiles: ${output}/tiles.pkl
+extraction_tasks: ${output}/extraction_tasks.pkl
+start_date: 2020-01-01
+end_date: 2020-02-01
+constellations:
+  - sentinel-2
+  - landsat-5
+  - landsat-7
+  - landsat-8

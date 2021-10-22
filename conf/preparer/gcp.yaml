@@ -1,0 +1,3 @@
+_target_: satextractor.preparer.gcp_preparer.gcp_prepare_archive
+n_jobs: 50
+chunk_size: 1000 # pixels

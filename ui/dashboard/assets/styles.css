@@ -1,0 +1,79 @@
+.dot {
+  height: 25px;
+  width: 25px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.scenariobox {
+  position: fixed;
+  top: 20%;
+  left: 40px;
+  width: 240px;
+  background: #fff8e7;
+}
+
+.modebar { display: none !important; }
+
+.filter-box {
+}
+
+.icon-box {
+  width: 5px;
+  max-width: 5%;
+}
+
+.my-button {
+  margin: 4px;
+}
+
+.html {
+  margin-left: calc(100vw - 100%);
+  margin-right: 0;
+}
+
+.active-button {
+  color: $primary;
+}
+
+.inactive-button {
+  color: $secondary;
+}
+
+.button-box {
+  padding: 0px;
+  margin: 4px;
+  background-color : #ffffff;
+}
+
+.np-padding {
+  padding: 0px;
+}
+
+.spinner {
+  height:1rem;
+  width:1rem;
+  padding:0px;
+  margin:0px;
+}
+
+.data-row {
+  vertical-align:baseline;
+}
+
+.item-box {
+  margin-right: 4px;
+  vertical-align: baseline;
+}
+
+.job-table-item {
+}
+
+.job-table {
+  width: 100%;
+}
+
+#job-table tr:nth-child(even){background-color: #f2f2f2;}
+
+#job-table tr:hover {background-color: #ddd;}

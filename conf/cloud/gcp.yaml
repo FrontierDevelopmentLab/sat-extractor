@@ -1,0 +1,5 @@
+user_id: lucas
+project: fdl-europe-world-food
+region: europe-west1
+storage_root: lk-wfe-test-eu
+storage_prefix: gs:/
