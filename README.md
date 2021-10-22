@@ -161,8 +161,17 @@ In order to run **SatExtractor** we recommend to have a virtual env and a cloud 
 
 <!-- USAGE EXAMPLES -->
 ## Usage
+&#x1F534;&#x1F534;&#x1F534;
+```diff
+- WARNING!!!!:
+Running SatExtractor will use your billable cloud provider services. 
+We strongly recommend testing it with a small region to see if everything is working ok. 
+Be sure you are running all your cloud provider services in the same region to avoid extra costs.
+```
+&#x1F534;&#x1F534;&#x1F534;
 
 Once a cloud provider user is set and the package is installed you'll need to grab the geojson region you want (you can get it from the super-cool tool [geojson.io](geojson.io)) and change the config files.
+
 
 1. Save the region as `<your_region_name>.geojson` and store it in the `outputs` folder (you can change your output dir in the `config.yaml`)
 2. Open the `config.yaml` and you'll see something like this:
