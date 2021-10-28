@@ -1,3 +1,6 @@
+# Custom
+output/*
+
 *.py[cod]
 __pycache__
 

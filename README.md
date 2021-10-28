@@ -164,38 +164,89 @@ In order to run **SatExtractor** we recommend to have a virtual env and a cloud 
 &#x1F534;&#x1F534;&#x1F534;
 ```diff
 - WARNING!!!!:
-Running SatExtractor will use your billable cloud provider services. 
-We strongly recommend testing it with a small region to see if everything is working ok. 
+Running SatExtractor will use your billable cloud provider services.
+We strongly recommend testing it with a small region to see if everything is working ok.
 Be sure you are running all your cloud provider services in the same region to avoid extra costs.
 ```
 &#x1F534;&#x1F534;&#x1F534;
 
-Once a cloud provider user is set and the package is installed you'll need to grab the geojson region you want (you can get it from the super-cool tool [geojson.io](geojson.io)) and change the config files.
+Once a cloud provider user is set and the package is installed you'll need to grab the GeoJSON region you want (you can get it from the super-cool tool [geojson.io](http://geojson.io/)) and change the config files.
 
 
-1. Save the region as `<your_region_name>.geojson` and store it in the `outputs` folder (you can change your output dir in the `config.yaml`)
-2. Open the `config.yaml` and you'll see something like this:
+1. Choose a region name (eg `cordoba` below) and create an output directory for it:
+```
+mkdir output/cordoba
+```
+2. Save the region GeoJSON as `aoi.geojson` and store it in the folder you just created.
+3. Open the `config.yaml` and you'll see something like this:
 
-<img src="images/config.png" alt="Logo">
+```yaml
+dataset_name: cordoba
+output: ./output/${dataset_name}
+
+log_path: ${output}/main.log
+credentials: ${output}/token.json
+gpd_input: ${output}/aoi.geojson
+item_collection: ${output}/item_collection.geojson
+tiles: ${output}/tiles.pkl
+extraction_tasks: ${output}/extraction_tasks.pkl
+
+start_date: 2020-01-01
+end_date: 2020-02-01
+
+constellations:
+  - sentinel-2
+  - landsat-5
+  - landsat-7
+  - landsat-8
+
+defaults:
+  - stac: gcp
+  - tiler: utm
+  - scheduler: utm
+  - deployer: gcp
+  - builder: gcp
+  - cloud: gcp
+  - preparer: gcp
+  - _self_
+tasks:
+  - build
+  - stac
+  - tile
+  - schedule
+  - prepare
+  - deploy
+
+hydra:
+  run:
+    dir: .
+```
 
 The important here is to set the `dataset_name` to  `<your_region_name>`, define the `start_date` and `end_date` for your revisits, your `constellations` and the tasks to be run (you would want to run the `build` only one time and the comment it out.)
 
-**Important**: the `token.json` contains the needed credentials to access you cloud provider. In this example case it contains the gcp credentials. You'll need to provide it.
+**Important**: the `token.json` contains the needed credentials to access you cloud provider. In this example case it contains the gcp credentials. You can see instructions for getting it below in the [Authentication](#authentication) instructions.
 
 3. Open the `cloud/<provider>.yaml` and add there your account info as in the default provided file.
    (optional): you can choose different configurations by changing modules configs: `builder`, `stac`, `tiler`, `scheduler`, `preparer`, etc. There you can change things like patch_size, chunk_size.
 
 4. Run `python src/satextractor/cli.py` and enjoy!
 
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
 See the [open issues](https://github.com/FrontierDevelopmentLab/sat-extractor/issues) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
+## Authentication
+### Google Cloud
+To get the `token.json` for Google Cloud, the recommended approach is to create a service account:
+1. Go to [Credentials](https://console.cloud.google.com/apis/credentials)
+2. Click `Create Credentials` and choose `Service account`
+3. Enter a name (e.g. `sat-extractor`) and click `Done` (you may also want to modify permissions and users)
+4. Choose the account from the list and then to to the `Keys` tab
+5. Click `Add key` -> `Create new key` -> `JSON` and save the file that gets downloaded
+6. Rename to `token.json` and you're done!
+
+You may also need to run `gcloud config set project your-proj-name` for `sat-extractor` to work properly.
 
 <!-- CONTRIBUTING -->
 ## Contributing
