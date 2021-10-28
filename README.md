@@ -241,7 +241,8 @@ See the [open issues](https://github.com/FrontierDevelopmentLab/sat-extractor/is
 To get the `token.json` for Google Cloud, the recommended approach is to create a service account:
 1. Go to [Credentials](https://console.cloud.google.com/apis/credentials)
 2. Click `Create Credentials` and choose `Service account`
-3. Enter a name (e.g. `sat-extractor`) and click `Done` (you may also want to modify permissions and users)
+3. Enter a name (e.g. `sat-extractor`) and click `Create and Continue`
+4. Under `Select a role`, choose `Basic` -> `Editor` and then click `Done`
 4. Choose the account from the list and then to to the `Keys` tab
 5. Click `Add key` -> `Create new key` -> `JSON` and save the file that gets downloaded
 6. Rename to `token.json` and you're done!
