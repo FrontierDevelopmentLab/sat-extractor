@@ -165,8 +165,10 @@ In order to run **SatExtractor** we recommend to have a virtual env and a cloud 
 ```diff
 - WARNING!!!!:
 Running SatExtractor will use your billable cloud provider services.
-We strongly recommend testing it with a small region to see if everything is working ok.
-Be sure you are running all your cloud provider services in the same region to avoid extra costs.
+We strongly recommend testing it with a small region to get acquainted 
+with the process and have a first sense of your cloud provider costs 
+for the datasets you want to generate. Be sure you are running all your 
+cloud provider services in the same region to avoid extra costs.
 ```
 &#x1F534;&#x1F534;&#x1F534;
 
