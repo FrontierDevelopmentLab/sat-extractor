@@ -165,9 +165,9 @@ In order to run **SatExtractor** we recommend to have a virtual env and a cloud 
 ```diff
 - WARNING!!!!:
 Running SatExtractor will use your billable cloud provider services.
-We strongly recommend testing it with a small region to get acquainted 
-with the process and have a first sense of your cloud provider costs 
-for the datasets you want to generate. Be sure you are running all your 
+We strongly recommend testing it with a small region to get acquainted
+with the process and have a first sense of your cloud provider costs
+for the datasets you want to generate. Be sure you are running all your
 cloud provider services in the same region to avoid extra costs.
 ```
 &#x1F534;&#x1F534;&#x1F534;
@@ -228,7 +228,7 @@ The important here is to set the `dataset_name` to  `<your_region_name>`, define
 
 **Important**: the `token.json` contains the needed credentials to access you cloud provider. In this example case it contains the gcp credentials. You can see instructions for getting it below in the [Authentication](#authentication) instructions.
 
-3. Open the `cloud/<provider>.yaml` and add there your account info as in the default provided file.
+3. Open the `cloud/<provider>.yaml` and add there your account info as in the default provided file. The `storage_root` must point to an existing bucket/bucket directory. `user_id` is simply used for naming resources.
    (optional): you can choose different configurations by changing modules configs: `builder`, `stac`, `tiler`, `scheduler`, `preparer`, etc. There you can change things like patch_size, chunk_size.
 
 4. Run `python src/satextractor/cli.py` and enjoy!
