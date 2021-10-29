@@ -63,6 +63,8 @@
     <li><a href="#usage">Usage</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
+    <li><a href="#citation">Citation</a></li>
+    <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
 </details>
 
@@ -275,6 +277,31 @@ Distributed under the BSD 2 License. See `LICENSE.txt` for more information.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
+
+## Citation 
+
+If you want to use this repo please cite:
+
+```
+@software{dorr_francisco_2021_5609657,
+  author       = {Dorr, Francisco and
+                  Kruitwagen, Lucas and
+                  Ramos, Raúl and
+                  García, Dolores and
+                  Gottfriedsen, Julia and
+                  Kalaitzis, Freddie},
+  title        = {SatExtractor},
+  month        = oct,
+  year         = 2021,
+  publisher    = {Zenodo},
+  version      = {v0.1.0},
+  doi          = {10.5281/zenodo.5609657},
+  url          = {https://doi.org/10.5281/zenodo.5609657}
+}
+```
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 ## Acknowledgments
 
 <div align="center">
@@ -285,3 +312,4 @@ Distributed under the BSD 2 License. See `LICENSE.txt` for more information.
 
 
 This work is the result of the 2021 ESA Frontier Development Lab World Food Embeddings team. We are grateful to all organisers, mentors and sponsors for providing us this opportunity. We thank Google Cloud for providing computing and storage resources to complete this work.
+
