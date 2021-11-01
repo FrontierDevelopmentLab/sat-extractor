@@ -161,7 +161,7 @@ class BuildGCP:
 
         dlq_topic_name = "projects/{project_id}/topics/{topic}".format(
             project_id=self.project,
-            topic="-".join([self.user_id, "stacextractor-dql"]),
+            topic="-".join([self.user_id, "stacextractor-dlq"]),
         )
 
         self.topic_name = topic_name

@@ -250,6 +250,9 @@ To get the `token.json` for Google Cloud, the recommended approach is to create 
 5. Click `Add key` -> `Create new key` -> `JSON` and save the file that gets downloaded
 6. Rename to `token.json` and you're done!
 
+For building the `sat-extractor` service, you may also need to configure the credentials used by the cloud provider commandline devkit.
+Permissions at the project-owner level are recommended.
+If using Google Cloud Platform, you can authorize the `gcloud` devkit to access Google Cloud Platform using your Google credentials by running the command `gcloud auth login`.
 You may also need to run `gcloud config set project your-proj-name` for `sat-extractor` to work properly.
 
 <!-- CONTRIBUTING -->
