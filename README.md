@@ -63,6 +63,8 @@
     <li><a href="#usage">Usage</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
+    <li><a href="#citation">Citation</a></li>
+    <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
 </details>
 
@@ -249,6 +251,9 @@ To get the `token.json` for Google Cloud, the recommended approach is to create 
 5. Click `Add key` -> `Create new key` -> `JSON` and save the file that gets downloaded
 6. Rename to `token.json` and you're done!
 
+For building the `sat-extractor` service, you may also need to configure the credentials used by the cloud provider commandline devkit.
+Permissions at the project-owner level are recommended.
+If using Google Cloud Platform, you can authorize the `gcloud` devkit to access Google Cloud Platform using your Google credentials by running the command `gcloud auth login`.
 You may also need to run `gcloud config set project your-proj-name` for `sat-extractor` to work properly.
 
 <!-- CONTRIBUTING -->
@@ -276,6 +281,31 @@ Distributed under the BSD 2 License. See `LICENSE.txt` for more information.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
+
+## Citation 
+
+If you want to use this repo please cite:
+
+```
+@software{dorr_francisco_2021_5609657,
+  author       = {Dorr, Francisco and
+                  Kruitwagen, Lucas and
+                  Ramos, Raúl and
+                  García, Dolores and
+                  Gottfriedsen, Julia and
+                  Kalaitzis, Freddie},
+  title        = {SatExtractor},
+  month        = oct,
+  year         = 2021,
+  publisher    = {Zenodo},
+  version      = {v0.1.0},
+  doi          = {10.5281/zenodo.5609657},
+  url          = {https://doi.org/10.5281/zenodo.5609657}
+}
+```
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 ## Acknowledgments
 
 <div align="center">
@@ -286,3 +316,4 @@ Distributed under the BSD 2 License. See `LICENSE.txt` for more information.
 
 
 This work is the result of the 2021 ESA Frontier Development Lab World Food Embeddings team. We are grateful to all organisers, mentors and sponsors for providing us this opportunity. We thank Google Cloud for providing computing and storage resources to complete this work.
+
