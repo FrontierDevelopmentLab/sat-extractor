@@ -167,9 +167,9 @@ In order to run **SatExtractor** we recommend to have a virtual env and a cloud 
 ```diff
 - WARNING!!!!:
 Running SatExtractor will use your billable cloud provider services.
-We strongly recommend testing it with a small region to get acquainted 
-with the process and have a first sense of your cloud provider costs 
-for the datasets you want to generate. Be sure you are running all your 
+We strongly recommend testing it with a small region to get acquainted
+with the process and have a first sense of your cloud provider costs
+for the datasets you want to generate. Be sure you are running all your
 cloud provider services in the same region to avoid extra costs.
 ```
 &#x1F534;&#x1F534;&#x1F534;
@@ -230,7 +230,7 @@ The important here is to set the `dataset_name` to  `<your_region_name>`, define
 
 **Important**: the `token.json` contains the needed credentials to access you cloud provider. In this example case it contains the gcp credentials. You can see instructions for getting it below in the [Authentication](#authentication) instructions.
 
-3. Open the `cloud/<provider>.yaml` and add there your account info as in the default provided file.
+3. Open the `cloud/<provider>.yaml` and add there your account info as in the default provided file. The `storage_root` must point to an existing bucket/bucket directory. `user_id` is simply used for naming resources.
    (optional): you can choose different configurations by changing modules configs: `builder`, `stac`, `tiler`, `scheduler`, `preparer`, etc. There you can change things like patch_size, chunk_size.
 
 4. Run `python src/satextractor/cli.py` and enjoy!
@@ -245,7 +245,8 @@ See the [open issues](https://github.com/FrontierDevelopmentLab/sat-extractor/is
 To get the `token.json` for Google Cloud, the recommended approach is to create a service account:
 1. Go to [Credentials](https://console.cloud.google.com/apis/credentials)
 2. Click `Create Credentials` and choose `Service account`
-3. Enter a name (e.g. `sat-extractor`) and click `Done` (you may also want to modify permissions and users)
+3. Enter a name (e.g. `sat-extractor`) and click `Create and Continue`
+4. Under `Select a role`, choose `Basic` -> `Editor` and then click `Done`
 4. Choose the account from the list and then to to the `Keys` tab
 5. Click `Add key` -> `Create new key` -> `JSON` and save the file that gets downloaded
 6. Rename to `token.json` and you're done!

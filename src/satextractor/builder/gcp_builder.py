@@ -204,6 +204,8 @@ class BuildGCP:
             "4G",
             "--timeout",
             "15m",
+            "--platform",
+            "managed",
         ]
 
         p = run(cmd, capture_output=True, text=True)
