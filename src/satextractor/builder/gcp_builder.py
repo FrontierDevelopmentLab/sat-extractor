@@ -278,6 +278,9 @@ class BuildGCP:
             f"--push-auth-service-account={service_account_email}",
             "--ack-deadline=600",
             f"--dead-letter-topic={self.dlq_topic_name}",
+            "--max-delivery-attempts=5",
+            "--min-retry-delay=10s",
+            "--max-retry-delay=5m",
         ]
 
         p = run(cmd, capture_output=True, text=True)
