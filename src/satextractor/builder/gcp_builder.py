@@ -265,7 +265,7 @@ class BuildGCP:
         url = p.stdout.strip()
         print(url)
 
-        logger.info("bind the topic to the endpoint")
+        logger.info("create push subscription to endpoint")
 
         cmd = [
             "gcloud",
@@ -273,35 +273,52 @@ class BuildGCP:
             "subscriptions",
             "create",
             f"{self.user_id}-stacextractor",
-            "--topic",
-            f"{self.topic_name}",
+            f"--topic={self.topic_name}",
             f"--push-endpoint={url}/",
             f"--push-auth-service-account={service_account_email}",
-            "--ack-deadline",
-            "600",
+            "--ack-deadline=600",
+            f"--dead-letter-topic={self.dlq_topic_name}",
+            "--max-delivery-attempts=5",
+            "--min-retry-delay=10s",
+            "--max-retry-delay=5m",
         ]
 
         p = run(cmd, capture_output=True, text=True)
         print(p.stdout)
         print(p.stderr)
 
-        logger.info("adding deadletter")
+        logger.info("adding deadletter subscription")
 
         cmd = [
             "gcloud",
             "pubsub",
             "subscriptions",
-            "update",
-            f"{self.user_id}-stacextractor",
-            "--dead-letter-topic",
-            f"{self.dlq_topic_name}",
-            "--max-delivery-attempts",
-            "5",
+            "create",
+            f"{self.user_id}-stacextractor-dlq",
+            f"--topic={self.dlq_topic_name}",
         ]
 
         p = run(cmd, capture_output=True, text=True)
         print(p.stdout)
         print(p.stderr)
+
+        logger.info("get PubSub service account")
+
+        cmd = [
+            "gcloud",
+            "projects",
+            "list",
+            f"--filter={self.project}",
+            "--format=value(PROJECT_NUMBER)",
+        ]
+        p = run(cmd, capture_output=True, text=True)
+        print(p.stdout)
+        print(p.stderr)
+        proj_number = p.stdout.strip()
+
+        pubsub_service_account = (
+            f"service-{proj_number}@gcp-sa-pubsub.iam.gserviceaccount.com"
+        )
 
         logger.info("adding deadletter permissions")
         cmd = [
@@ -310,7 +327,7 @@ class BuildGCP:
             "topics",
             "add-iam-policy-binding",
             f"{self.dlq_topic_name}",
-            f"--member=serviceAccount:{service_account_email}",
+            f"--member=serviceAccount:{pubsub_service_account}",
             "--role=roles/pubsub.publisher",
         ]
 
@@ -324,7 +341,7 @@ class BuildGCP:
             "subscriptions",
             "add-iam-policy-binding",
             f"{self.user_id}-stacextractor",
-            f"--member=serviceAccount:{service_account_email}",
+            f"--member=serviceAccount:{pubsub_service_account}",
             "--role=roles/pubsub.subscriber",
         ]
 

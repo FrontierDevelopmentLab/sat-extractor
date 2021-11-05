@@ -93,6 +93,7 @@ setup(
         "google-cloud-bigquery",
         "hydra-core",
         "gcsfs",
+        "pyarrow",
         "pystac[validation]",
         "sentinelhub",
         # eg: 'aspectlib==1.1.1', 'six>=1.7',
