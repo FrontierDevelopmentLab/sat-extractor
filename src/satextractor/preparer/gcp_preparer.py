@@ -31,7 +31,8 @@ def gcp_prepare_archive(
     fs = GCSFileSystem(token=credentials)
     # make a dict of tiles and constellations sensing times
     tile_constellation_sensing_times: Dict[str, Dict[str, List[datetime]]] = {
-        tt.id: {kk: [] for kk in BAND_INFO.keys()} for tt in tiles
+        tt.id: {kk: [] for kk in BAND_INFO.keys() if kk in constellations}
+        for tt in tiles
     }
 
     for task in tasks:
