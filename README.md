@@ -110,16 +110,17 @@ The package is structured in a modular and configurable approach. It is basicall
   If the original constellation is not already in STAC standard it should be converted. To do so, you have to implement the constellation specific STAC conversor. Sentinel 2 and Landsat 7/8 examples can be found in <code> src/satextractor/stac </code>. The function that is actually called to perform the conversion to the STAC standard is set in stac hydra config file ( <code> conf/stac/gcp.yaml </code>)
 </details>
 
-- **Tiler**: Creates tiles of the given region to perform the extraction. <details>
+- **Tiler**: Creates tiles (patches) of the given region to perform the extraction. <details>
   <summary>more info</summary>
-  The Tiler split the region in UTM tiles using <a href=https://sentinelhub-py.readthedocs.io/en/latest/examples/large_area_utilities.html> SentinelHub splitter </a>. There will be one Extraction Task per Tile. The config about the tiler can be found in <code> conf/tiler/utm.yaml </code>. There, the size of the tiles can be specified. Take into account that these tiles are not the actual patches that are later stored in your cloud provider, this is just the unit from where the (smaller) patches will be extracted.
+  The Tiler split the region in tiles using <a href=https://sentinelhub-py.readthedocs.io/en/latest/examples/large_area_utilities.html> SentinelHub splitter </a>. For example if a Tile size of 10000m is set, you will have in your storage patches of size 10000m. 
+  The config about the tiler can be found in <code> conf/tiler/utm.yaml </code>. There, the size of the tiles can be specified. 
 </details>
 
 - **Scheduler**: Decides how those tiles are going to be scheduled creating extractions tasks. <details>
   <summary>more info</summary>
-  The Scheduler takes the resulting tiles from the Tiler and creates the actual patches (called also tiles) to be extracted.
+  The Scheduler takes the resulting tiles from the Tiler and group them in bigger areas to be extracted.
 
-  For example, if the Tiler splitted the region in 10000x10000 tiles, now the scheduler can be set to extract from each of the tiles smaller patches of, say, 1000x1000. Also, the scheduler calculates the intersection between the patches and the constellation STAC assets. At the end, you'll have and object called <code> ExtractionTask </code> with the information to extract one revisit, one band and one tile splitted in multiple patches. This <code> ExtractionTask </code> will be send to the cloud provider to perform the actual extraction.
+  For example, if the Tiler splitted the region in 1000x1000m tiles, now the scheduler can be set to group them in UTM splits of, say, 100000x100000m (100km). Also, the scheduler calculates the intersection between the patches and the constellation STAC assets. At the end, you'll have and object called <code> ExtractionTask </code> with the information to extract one revisit, one band and multiple patches. This <code> ExtractionTask </code> will be send to the cloud provider to perform the actual extraction.
 
   The config about the scheduler can be found in <code> conf/scheduler/utm.yaml </code>.
 </details>
