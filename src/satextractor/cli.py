@@ -26,7 +26,14 @@ from omegaconf import DictConfig
 def build(cfg):
     logger.info(f"using {cfg.builder._target_} builder")
 
-    hydra.utils.call(cfg.builder, cfg)
+    hydra.utils.call(
+        cfg.builder,
+        credentials=cfg.credentials,
+        project=cfg.cloud.project,
+        region=cfg.cloud.region,
+        storage_root=cfg.cloud.storage_root,
+        user_id=cfg.cloud.user_id,
+    )
 
 
 def stac(cfg):

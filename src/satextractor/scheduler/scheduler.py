@@ -1,5 +1,6 @@
 from itertools import compress
 from typing import List
+from typing import Union
 
 import geopandas as gpd
 import pandas as pd
@@ -25,7 +26,7 @@ def get_scheduler(name, **kwargs):
 def create_tasks_by_splits(
     tiles: List[Tile],
     split_m: int,
-    item_collection: str,
+    item_collection: Union[str, pystac.ItemCollection],
     constellations: List[str],
     bands: List[str] = None,
     interval: int = 1,
@@ -43,7 +44,7 @@ def create_tasks_by_splits(
     Args:
         tiles (List[Tile]): The tiles to separate in zones
         split_m (int): the split square size in m,
-        item_collection (str): The items geojson path containing the assets
+        item_collection (Union[str, ItemCollection]): Path to geojson or pystac ItemCollectIon object
         bands (List[str]): the bands to extract
         interval (int): the day intervale between revisits
         n_jobs (int): n_jobs used by joblib
@@ -53,11 +54,15 @@ def create_tasks_by_splits(
     Returns:
         List[ExtractionTask]: List of extraction tasks ready to deploy
     """
-    stac_items = pystac.ItemCollection.from_file(item_collection)
 
     logger.info("Loading items geojson...")
+    if isinstance(item_collection, str):
+        stac_items = pystac.ItemCollection.from_file(item_collection)
+        gdf = gpd.GeoDataFrame.from_file(item_collection)
+    else:  # stac_items is already an ItemCollection
+        stac_items = item_collection
+        gdf = gpd.GeoDataFrame.from_features(stac_items.to_dict())
 
-    gdf = gpd.GeoDataFrame.from_file(item_collection)
     gdf.datetime = pd.to_datetime(gdf.datetime).dt.tz_localize(None)
 
     tiles_gdf = cluster_tiles_in_utm(tiles, split_m)
