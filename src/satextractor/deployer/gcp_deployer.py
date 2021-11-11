@@ -43,3 +43,5 @@ def deploy_tasks(credentials, extraction_tasks, storage_path, chunk_size, topic)
     )
 
     logger.info("Done publishing tasks!")
+
+    return job_id
