@@ -184,6 +184,7 @@ def download_and_extract_tiles_window(
                 f"{task.task_id}_warp.vrt",
                 "/vsimem/content",
                 dstSRS=f"EPSG:{epsg}",
+                creationOptions=["QUALITY=100", "REVERSIBLE=YES"],
             )
         else:
             file = "/vsimem/content"
@@ -196,6 +197,7 @@ def download_and_extract_tiles_window(
             projWinSRS=f"EPSG:{epsg}",
             xRes=resolution,
             yRes=resolution,
+            creationOptions=["QUALITY=100", "REVERSIBLE=YES"],
         )
         file = None
         out_files.append(out_f)
@@ -230,7 +232,15 @@ def task_mosaic_patches(
 
     out_f = f"{task.task_id}_{dst_path}"
     datasets = [rasterio.open(f) for f in out_files]
-    riomerge(datasets, method=method, dst_path=out_f)
+    riomerge(
+        datasets,
+        method=method,
+        dst_path=out_f,
+        dst_kwds={
+            "QUALITY": "100",
+            "REVERSIBLE": "YES",
+        },
+    )
 
     coords = get_tile_pixel_coords(task.tiles, out_f)
     patches = []
