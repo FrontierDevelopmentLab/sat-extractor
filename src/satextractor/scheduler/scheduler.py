@@ -160,7 +160,7 @@ def cluster_tiles_in_utm(tiles: List[Tile], split_m: int) -> gpd.GeoDataFrame:
     splits = split_region_in_utm_tiles(
         tiles_geom_multi,
         crs=CRS.WGS84,
-        bbox_size=(split_m, split_m),
+        bbox_size=split_m,
     )
 
     tiles_gdf = gpd.GeoDataFrame({"geometry": tiles_geom})
