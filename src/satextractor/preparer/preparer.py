@@ -32,24 +32,6 @@ def create_zarr_patch_structure(
             dtype=np.uint16,
         )
 
-        mask_path = f"{patch_constellation_path}/mask"
-        zarr.open_array(
-            fs_mapper(mask_path),
-            "w",
-            shape=(len(sensing_times), len(bands)),
-            chunks=(1, 1),
-            dtype=np.uint8,
-        )
-
-        percentiles_path = f"{patch_constellation_path}/percentiles_0to100_5incr"
-        zarr.open_array(
-            fs_mapper(percentiles_path),
-            "w",
-            shape=(len(sensing_times), len(bands), 21),
-            chunks=(1, 1, 21),
-            dtype=np.float32,
-        )
-
         # Create timestamps array
         timestamps_path = f"{patch_constellation_path}/timestamps"
         z_dates = zarr.open_array(
