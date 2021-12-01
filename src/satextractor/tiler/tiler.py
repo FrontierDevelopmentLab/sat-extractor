@@ -27,18 +27,17 @@ def split_region_in_utm_tiles(
     crs_bboxes = utm_splitter.get_bbox_list()
     info_bboxes = utm_splitter.get_info_list()
 
-    tiles = []
-    for info, box in zip(info_bboxes, crs_bboxes):
-        # tile ids are globally unique and take the format shown below
-        zone = info["utm_zone"]
-        row = info["utm_row"]
-        x, y = (int(v / bbox_size) for v in box.lower_left)
-        tiles.append(
-            Tile(
-                id=f"{zone}_{row}_{bbox_size}_{x}_{y}",
-                epsg=box.crs.epsg,
-                bbox=(box.min_x, box.min_y, box.max_x, box.max_y),
-            ),
+    tiles = [
+        Tile(
+            zone=info["utm_zone"],
+            row=info["utm_row"],
+            min_x=box.min_x,
+            min_y=box.min_y,
+            max_x=box.max_x,
+            max_y=box.max_y,
+            epsg=box.crs.epsg,
         )
+        for info, box in zip(info_bboxes, crs_bboxes)
+    ]
 
     return tiles

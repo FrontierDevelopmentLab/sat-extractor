@@ -33,7 +33,7 @@ def read(*names, **kwargs):
 
 setup(
     name="satextractor",
-    version="0.2.0",
+    version="0.2.1",
     license="BSD-2-Clause",
     description="SatExtractor. Extract everything from everywhere.",
     url="https://github.com/FrontierDevelopmentLab/sat-extractor",
