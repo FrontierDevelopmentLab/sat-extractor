@@ -170,8 +170,8 @@ def download_and_extract_tiles_window(
     for i, url in enumerate(urls):
         content = download_f(url)
 
-        gdal.FileFromMemBuffer("/vsimem/content", content.read())
-        d = gdal.Open("/vsimem/content", gdal.GA_Update)
+        gdal.FileFromMemBuffer(f"/vsimem/{task.task_id}_content", content.read())
+        d = gdal.Open(f"/vsimem/{task.task_id}_content", gdal.GA_Update)
 
         proj = osr.SpatialReference(wkt=d.GetProjection())
         proj = proj.GetAttrValue("AUTHORITY", 1)
@@ -182,12 +182,12 @@ def download_and_extract_tiles_window(
         if int(proj) != epsg:
             file = gdal.Warp(
                 f"{task.task_id}_warp.vrt",
-                "/vsimem/content",
+                f"/vsimem/{task.task_id}_content",
                 dstSRS=f"EPSG:{epsg}",
                 creationOptions=["QUALITY=100", "REVERSIBLE=YES"],
             )
         else:
-            file = "/vsimem/content"
+            file = f"/vsimem/{task.task_id}_content"
 
         out_f = f"{task.task_id}_{i}.jp2"
         gdal.Translate(
@@ -197,6 +197,7 @@ def download_and_extract_tiles_window(
             projWinSRS=f"EPSG:{epsg}",
             xRes=resolution,
             yRes=resolution,
+            resampleAlg="cubic",
             creationOptions=["QUALITY=100", "REVERSIBLE=YES"],
         )
         file = None
