@@ -5,7 +5,6 @@ from typing import List
 import numpy as np
 import zarr
 from satextractor.models import ExtractionTask
-from scipy.ndimage import zoom
 
 
 def store_patches(
@@ -14,7 +13,6 @@ def store_patches(
     patches: List[np.ndarray],
     task: ExtractionTask,
     bands: List[str],
-    patch_resolution: int,
     archive_resolution: int,
 ):
     """Store a list of patches in storage path.
@@ -48,11 +46,6 @@ def store_patches(
         timestamp_idx = timestamps.index(task.sensing_time)
         patch = patches[i]
 
-        # maybe resize -> bicubic upsample
-        if patch_resolution != archive_resolution:
-            patch = zoom(patch, int(patch_resolution / archive_resolution), order=3)
-
-        # in patch resolution
         if patch.shape != size:
             pad_x = int(size[0] - patch.shape[0])
             pad_y = int(size[1] - patch.shape[1])

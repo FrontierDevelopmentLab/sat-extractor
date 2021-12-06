@@ -4,7 +4,8 @@ tests
 *.pyo
 *.pyd
 notebooks
-outputs
+output
+images
 docs
 htmlcov
 dist
@@ -14,6 +15,8 @@ ci
 .vscode
 .mypy_cache
 .ipynb_checkpoints
-uis
 __pycache__
 .pytest_cache
+.hydra
+ui
+*.ipynb

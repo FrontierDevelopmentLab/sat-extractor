@@ -6,7 +6,6 @@ hlpful: https://stackoverflow.com/questions/47376380/create-google-cloud-functio
 """
 import json
 import subprocess
-from pathlib import Path
 from subprocess import run
 
 from google.api_core.exceptions import NotFound
@@ -143,17 +142,15 @@ class BuildGCP:
     def build_docker_image(self):
         logger.info("Building docker image...")
 
-        dockerfile_path = Path(__file__).parents[3]
-
         cmd = [
             "gcloud",
             "builds",
             "submit",
-            f"{dockerfile_path}",
+            ".",
             "--tag",
             f"{self.image_region_code}/{self.project}/{self.user_id}-stacextractor",
         ]
-
+        logger.info(cmd)
         p = run(cmd, text=True, stdout=subprocess.DEVNULL)
         p.check_returncode()
 
