@@ -29,7 +29,6 @@ def deploy_tasks(credentials, extraction_tasks, storage_path, chunk_size, topic)
             extraction_task=extraction_task_data,
             bands=list(BAND_INFO[task.constellation].keys()),
             chunks=(1, 1, chunk_size, chunk_size),
-            resolution=int(BAND_INFO[task.constellation][task.band]["gsd"]),
         )
         data = json.dumps(data, default=str)
 

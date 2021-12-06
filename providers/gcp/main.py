@@ -106,7 +106,6 @@ def extract_patches():
         # common data
         storage_gs_path = request_json["storage_gs_path"]
         bands = request_json["bands"]
-        resolution = request_json["resolution"]
         job_id = request_json["job_id"]
 
         fs = gcsfs.GCSFileSystem()
@@ -150,16 +149,16 @@ def extract_patches():
                 "Environment variable MONITOR_TABLE not set. Unable to push task status to Monitor",
             )
 
+        archive_resolution = int(
+            min([b["gsd"] for _, b in BAND_INFO[constellation].items()]),
+        )
+
         patches = task_mosaic_patches(
             cloud_fs=fs,
             download_f=download_blob,
             task=task,
             method="first",
-            resolution=resolution,
-        )
-
-        archive_resolution = int(
-            min([b["gsd"] for kk, b in BAND_INFO[constellation].items()]),
+            resolution=archive_resolution,
         )
 
         logger.info(f"Ready to store {len(patches)} patches at {storage_gs_path}.")
@@ -169,7 +168,6 @@ def extract_patches():
             patches,
             task,
             bands,
-            resolution,
             archive_resolution,
         )
 

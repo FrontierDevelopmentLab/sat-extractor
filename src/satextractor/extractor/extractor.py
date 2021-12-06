@@ -12,6 +12,7 @@ from osgeo import gdal
 from osgeo import osr
 from rasterio import warp
 from rasterio.crs import CRS
+from rasterio.enums import Resampling
 from rasterio.merge import merge as riomerge
 from satextractor.models import ExtractionTask
 from satextractor.models import Tile
@@ -106,6 +107,7 @@ def download_and_extract_tiles_window_COG(
     # set the transforms for the output file
     dst_transform = Affine(resolution, 0.0, left, 0.0, -resolution, top)
     out_shp = (int((right - left) / resolution), int((top - bottom) / resolution))
+    logger.debug(f"Affine with resolution: {dst_transform} and out_shp {out_shp} ")
 
     outfiles = []
 
@@ -136,6 +138,7 @@ def download_and_extract_tiles_window_COG(
             transform=dst_transform,
             crs=CRS.from_epsg(epsg),
             dtype=rst_arr.dtype,
+            resampling=Resampling.bilinear,
         ) as dst:
 
             dst.write(rst_arr, indexes=1)
@@ -196,8 +199,8 @@ def download_and_extract_tiles_window(
             projWin=proj_win,
             projWinSRS=f"EPSG:{epsg}",
             xRes=resolution,
-            yRes=resolution,
-            resampleAlg="cubic",
+            yRes=-resolution,
+            resampleAlg="bilinear",
             creationOptions=["QUALITY=100", "REVERSIBLE=YES"],
         )
         file = None

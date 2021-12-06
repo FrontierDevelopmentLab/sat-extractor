@@ -150,7 +150,7 @@ class BuildGCP:
             "--tag",
             f"{self.image_region_code}/{self.project}/{self.user_id}-stacextractor",
         ]
-
+        logger.info(cmd)
         p = run(cmd, text=True, stdout=subprocess.DEVNULL)
         p.check_returncode()
 
