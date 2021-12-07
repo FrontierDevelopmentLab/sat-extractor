@@ -157,7 +157,7 @@ def extract_patches():
             cloud_fs=fs,
             download_f=download_blob,
             task=task,
-            method="first",
+            method="max",
             resolution=archive_resolution,
         )
 
