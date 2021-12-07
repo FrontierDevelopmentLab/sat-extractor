@@ -1,6 +1,5 @@
 import base64
 import datetime
-import io
 import json
 import logging
 import os
@@ -13,7 +12,6 @@ import gcsfs
 import pystac
 from flask import Flask
 from flask import request
-from google.cloud import storage
 from loguru import logger
 from satextractor.extractor import task_mosaic_patches
 from satextractor.models import BAND_INFO
@@ -33,45 +31,6 @@ if __name__ != "__main__":
     app.logger.info("Service started...")
 else:
     app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
-
-
-def get_bucket_name(url: str) -> str:
-    """Get the bucket for an url like:
-    'gs://gcp-public-data-sentinel-2/
-    Args:
-        url (str): The gs url
-    Returns:
-        str: the bucket name
-    """
-
-    return url.split("/")[2]
-
-
-def get_blob_name(url: str) -> str:
-    """Get the blob for an url like:
-    'gs://gcp-public-data-sentinel-2/tiles/17/Q/QV/S2B_MSIL1C.jp2'
-    Args:
-        url (str): The gs url
-    Returns:
-        str: the blob name
-    """
-    return "/".join(url.split("/")[3:])
-
-
-def download_blob(url: str) -> io.BytesIO:
-    """Download a blob as bytes
-    Args:
-        url (str): the url to download
-    Returns:
-        io.BytesIO: the content as bytes
-    """
-    storage_client = storage.Client()
-    bucket_name = get_bucket_name(url)
-    source_blob_name = get_blob_name(url)
-    bucket = storage_client.bucket(bucket_name)
-    blob = bucket.blob(source_blob_name)
-    f = io.BytesIO(blob.download_as_bytes())
-    return f
 
 
 def format_stacktrace():
@@ -155,7 +114,6 @@ def extract_patches():
 
         patches = task_mosaic_patches(
             cloud_fs=fs,
-            download_f=download_blob,
             task=task,
             method="max",
             resolution=archive_resolution,

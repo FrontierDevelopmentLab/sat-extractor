@@ -1,6 +1,5 @@
 import os
 from typing import Any
-from typing import Callable
 from typing import List
 from typing import Tuple
 
@@ -8,8 +7,6 @@ import numpy as np
 import rasterio
 from affine import Affine
 from loguru import logger
-from osgeo import gdal
-from osgeo import osr
 from rasterio import warp
 from rasterio.crs import CRS
 from rasterio.enums import Resampling
@@ -85,7 +82,7 @@ def get_tile_pixel_coords(tiles: List[Tile], raster_file: str) -> List[Tuple[int
     return list(zip(rows, cols))
 
 
-def download_and_extract_tiles_window_COG(
+def download_and_extract_tiles_window(
     fs: Any,
     task: ExtractionTask,
     resolution: int,
@@ -148,69 +145,8 @@ def download_and_extract_tiles_window_COG(
     return outfiles
 
 
-def download_and_extract_tiles_window(
-    download_f: Callable,
-    task: ExtractionTask,
-    resolution: int,
-) -> List[str]:
-    """Download and extract from the task assets the window bounding the tiles.
-    i.e a crop of the original assets will
-
-    Args:
-        download_f (Callable): The download function to use. It should return a BytesIO
-                               to read the content.
-        task (ExtractionTask): The extraction task
-        resolution (int): The target resolution
-
-    Returns:
-        List[str]: A list of files that store the crops of the original assets
-    """
-    band = task.band
-    urls = [item.assets[band].href for item in task.item_collection.items]
-
-    epsg = task.tiles[0].epsg
-    out_files = []
-    for i, url in enumerate(urls):
-        content = download_f(url)
-
-        gdal.FileFromMemBuffer(f"/vsimem/{task.task_id}_content", content.read())
-        d = gdal.Open(f"/vsimem/{task.task_id}_content", gdal.GA_Update)
-
-        proj = osr.SpatialReference(wkt=d.GetProjection())
-        proj = proj.GetAttrValue("AUTHORITY", 1)
-        d = None
-
-        proj_win = get_proj_win(task.tiles)
-
-        if int(proj) != epsg:
-            file = gdal.Warp(
-                f"{task.task_id}_warp.vrt",
-                f"/vsimem/{task.task_id}_content",
-                dstSRS=f"EPSG:{epsg}",
-                creationOptions=["QUALITY=100", "REVERSIBLE=YES"],
-            )
-        else:
-            file = f"/vsimem/{task.task_id}_content"
-
-        out_f = f"{task.task_id}_{i}.jp2"
-        gdal.Translate(
-            out_f,
-            file,
-            projWin=proj_win,
-            projWinSRS=f"EPSG:{epsg}",
-            xRes=resolution,
-            yRes=-resolution,
-            resampleAlg="bilinear",
-            creationOptions=["QUALITY=100", "REVERSIBLE=YES"],
-        )
-        file = None
-        out_files.append(out_f)
-    return out_files
-
-
 def task_mosaic_patches(
     cloud_fs: Any,
-    download_f: Callable,
     task: ExtractionTask,
     method: str = "max",
     resolution: int = 10,
@@ -219,7 +155,7 @@ def task_mosaic_patches(
     """Get tile patches from the mosaic of a given task
 
     Args:
-        download_f (Callable): The function to download the task assets
+        cloud_fs (Any): the cloud_fs to access the files
         task (ExtractionTask): The task
         method (str, optional): The method to use while merging the assets. Defaults to "max".
         resolution (int, optional): The target resolution. Defaults to 10.
@@ -229,10 +165,7 @@ def task_mosaic_patches(
         List[np.ndarray]: The tile patches as numpy arrays
     """
 
-    if task.constellation == "sentinel-2":
-        out_files = download_and_extract_tiles_window(download_f, task, resolution)
-    else:
-        out_files = download_and_extract_tiles_window_COG(cloud_fs, task, resolution)
+    out_files = download_and_extract_tiles_window(cloud_fs, task, resolution)
 
     out_f = f"{task.task_id}_{dst_path}"
     datasets = [rasterio.open(f) for f in out_files]
