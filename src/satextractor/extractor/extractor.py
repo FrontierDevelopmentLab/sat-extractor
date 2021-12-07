@@ -6,9 +6,13 @@ from typing import Tuple
 
 import numpy as np
 import rasterio
+from affine import Affine
 from loguru import logger
 from osgeo import gdal
 from osgeo import osr
+from rasterio import warp
+from rasterio.crs import CRS
+from rasterio.enums import Resampling
 from rasterio.merge import merge as riomerge
 from satextractor.models import ExtractionTask
 from satextractor.models import Tile
@@ -80,6 +84,7 @@ def get_tile_pixel_coords(tiles: List[Tile], raster_file: str) -> List[Tuple[int
 
     return list(zip(rows, cols))
 
+
 def download_and_extract_tiles_window_COG(
     fs: Any,
     task: ExtractionTask,
@@ -119,6 +124,7 @@ def download_and_extract_tiles_window_COG(
                     out_shape=out_shp,
                     fill_value=0,
                     boundless=True,
+                    resampling=Resampling.bilinear,
                 )
 
         out_f = f"{task.task_id}_{ii}.tif"
@@ -140,7 +146,6 @@ def download_and_extract_tiles_window_COG(
         outfiles.append(out_f)
 
     return outfiles
-
 
 
 def download_and_extract_tiles_window(
@@ -223,7 +228,7 @@ def task_mosaic_patches(
     Returns:
         List[np.ndarray]: The tile patches as numpy arrays
     """
-    
+
     if task.constellation == "sentinel-2":
         out_files = download_and_extract_tiles_window(download_f, task, resolution)
     else:
