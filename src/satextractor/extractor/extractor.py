@@ -212,7 +212,7 @@ def task_mosaic_patches(
     cloud_fs: Any,
     download_f: Callable,
     task: ExtractionTask,
-    method: str = "first",
+    method: str = "max",
     resolution: int = 10,
     dst_path="merged.jp2",
 ) -> List[np.ndarray]:
@@ -221,7 +221,7 @@ def task_mosaic_patches(
     Args:
         download_f (Callable): The function to download the task assets
         task (ExtractionTask): The task
-        method (str, optional): The method to use while merging the assets. Defaults to "first".
+        method (str, optional): The method to use while merging the assets. Defaults to "max".
         resolution (int, optional): The target resolution. Defaults to 10.
         dst_path (str): path to store the merged files
 
