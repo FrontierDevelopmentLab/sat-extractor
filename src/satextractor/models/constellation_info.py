@@ -115,6 +115,13 @@ LANDSAT8_BAND_INFO = {
         ),
         "gsd": 100.0,
     },
+    "BQA": {
+        "band": Band.create(
+            name="BQA",
+            common_name="bqa",
+        ),
+        "gsd": 30.0,
+    },
 }
 
 LANDSAT7_BAND_INFO = {
@@ -199,6 +206,13 @@ LANDSAT7_BAND_INFO = {
         ),
         "gsd": 15.0,
     },
+    "BQA": {
+        "band": Band.create(
+            name="BQA",
+            common_name="bqa",
+        ),
+        "gsd": 30.0,
+    },
 }
 
 LANDSAT5_BAND_INFO = {
@@ -264,6 +278,13 @@ LANDSAT5_BAND_INFO = {
             full_width_half_max=0.135,
         ),
         "gsd": 30.0,
+    },
+    "BQA": {
+        "band": Band.create(
+            name="BQA",
+            common_name="bqa",
+        ),
+        "gsd": 60.0,
     },
 }
 

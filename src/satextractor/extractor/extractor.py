@@ -115,13 +115,18 @@ def download_and_extract_tiles_window(
             with rasterio.open(f) as ds:
                 window = get_window_union(task.tiles, ds)
 
+                if task.band == "BQA":
+                    resampling = Resampling.nearest
+                else:
+                    resampling = Resampling.bilinear
+
                 rst_arr = ds.read(
                     1,
                     window=window,
                     out_shape=out_shp,
                     fill_value=0,
                     boundless=True,
-                    resampling=Resampling.bilinear,
+                    resampling=resampling,
                 )
 
         out_f = f"{task.task_id}_{ii}.tif"
