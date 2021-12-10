@@ -30,6 +30,7 @@ def copy_mtl_files(
             )
             for task in tasks
             for tile in task.tiles
+            if "landsat" in task.constellation
         ],
     )
 
