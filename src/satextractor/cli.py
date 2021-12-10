@@ -146,19 +146,19 @@ def deployer(cfg):
         topic,
     )
 
-    # extraction_tasks_path = os.path.join(
-    #     ".", cfg.dataset_name + "_extraction_tasks.pkl",
-    # )
 
-    # logger.info(f"deploying on {cfg.deployer._target_} to {cfg.cloud.storage_root}",)
+def plugins(cfg):
 
-    # extraction_tasks = pickle.load(open(extraction_tasks_path, "rb"))
+    logger.info(f"using {cfg.plugins._target_} as plugin")
 
-    # # check tiles meet spec
-    # for t in extraction_tasks:
-    #     assert isinstance(t, ExtractionTask), "Task does not match ExtractionTask spec"
+    extraction_tasks = pickle.load(open(cfg.extraction_tasks, "rb"))
 
-    # hydra.utils.instantiate(cfg.deployer, extraction_tasks)
+    hydra.utils.call(
+        cfg.plugins,
+        cfg.credentials,
+        extraction_tasks,
+        f"{cfg.cloud.storage_prefix}/{cfg.cloud.storage_root}/{cfg.dataset_name}",
+    )
 
 
 @hydra.main(config_path="./../../conf", config_name="config")
@@ -181,7 +181,8 @@ def main(cfg: DictConfig):
             "schedule",
             "prepare",
             "deploy",
-        ], "valid tasks are [build, stac, tile, schedule, prepare, deploy]"
+            "plugins",
+        ], "valid tasks are [build, stac, tile, schedule, prepare, deploy, plugins]"
 
     logger.info(f"Running tasks {cfg.tasks}")
 
@@ -202,6 +203,9 @@ def main(cfg: DictConfig):
 
     if "deploy" in cfg.tasks:
         deployer(cfg)
+
+    if "plugins" in cfg.tasks:
+        plugins(cfg)
 
     return 0
 
