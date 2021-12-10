@@ -25,6 +25,7 @@ defaults:
   - builder: gcp
   - cloud: gcp
   - preparer: gcp
+  - plugins: gcp
   - _self_
 tasks:
   - build
@@ -33,6 +34,7 @@ tasks:
   - schedule
   - prepare
   - deploy
+  - plugins
 
 hydra:
   run:
