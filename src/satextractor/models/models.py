@@ -9,7 +9,7 @@ import pystac
 from satextractor.utils import get_transform_function
 
 
-@attr.s
+@attr.s(frozen=True)
 class Tile:
     zone: int = attr.ib()
     row: str = attr.ib()
