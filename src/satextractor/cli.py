@@ -127,6 +127,7 @@ def preparer(cfg):
         cfg.constellations,
         f"{cfg.cloud.storage_prefix}/{cfg.cloud.storage_root}/{cfg.dataset_name}",
         cfg.tiler.bbox_size,
+        cfg.overwrite
     )
 
 

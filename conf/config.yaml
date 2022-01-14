@@ -1,22 +1,3 @@
-dataset_name: cordoba
-output: ./output/${dataset_name}
-
-log_path: ${output}/main.log
-credentials: ${output}/token.json
-gpd_input: ${output}/aoi.geojson
-item_collection: ${output}/item_collection.geojson
-tiles: ${output}/tiles.pkl
-extraction_tasks: ${output}/extraction_tasks.pkl
-
-start_date: 2020-01-01
-end_date: 2020-02-01
-
-constellations:
-  - sentinel-2
-  - landsat-5
-  - landsat-7
-  - landsat-8
-
 defaults:
   - stac: gcp
   - tiler: utm
@@ -29,13 +10,27 @@ defaults:
   - _self_
 tasks:
   - build
-  - stac
-  - tile
-  - schedule
-  - prepare
-  - deploy
-  - plugins
-
+  #- stac
+  #- tile
+  #- schedule
+  #- prepare
+  #- deploy
+  #- plugins
+overwrite: false
+dataset_name: alumbrera
+output: ./outputs/
 hydra:
   run:
     dir: .
+log_path: ${output}/main.log
+credentials: ./oxeo-main-s1.json
+gpd_input: ${output}/${dataset_name}.geojson
+item_collection: ${output}/item_collection.geojson
+tiles: ${output}/${dataset_name}_tiles.pkl
+extraction_tasks: ${output}/extraction_tasks.pkl
+start_date: 2017-01-01
+end_date: 2021-01-01
+constellations:
+  - sentinel-2
+  - landsat-8
+
