@@ -1,7 +1,5 @@
 import concurrent
-import hashlib
 import json
-from datetime import datetime
 
 from google.cloud import pubsub_v1
 from loguru import logger
@@ -9,13 +7,14 @@ from satextractor.models.constellation_info import BAND_INFO
 from tqdm import tqdm
 
 
-def deploy_tasks(credentials, extraction_tasks, storage_path, chunk_size, topic):
-
-    user_id = topic.split("/")[-1].split("-")[0]
-
-    job_id = hashlib.sha224(
-        (user_id + str(datetime.now())).encode(),
-    ).hexdigest()[:10]
+def deploy_tasks(
+    job_id,
+    credentials,
+    extraction_tasks,
+    storage_path,
+    chunk_size,
+    topic,
+):
 
     logger.info(f"Deploying {len(extraction_tasks)} tasks with job_id: {job_id}")
 
