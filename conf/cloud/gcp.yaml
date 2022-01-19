@@ -1,5 +1,5 @@
-user_id: testappend
-project: oxeo-main
-region: europe-west4
-storage_root: oxeo-water/test-append
+user_id: lucas
+project: fdl-europe-world-food
+region: europe-west1
+storage_root: lk-wfe-test-eu
 storage_prefix: gs:/
