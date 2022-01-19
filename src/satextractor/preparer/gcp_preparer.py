@@ -23,8 +23,8 @@ def gcp_prepare_archive(
     constellations: List[str],
     storage_root: str,
     patch_size: int,
+    overwrite: bool,
     chunk_size: int,
-    overwrite: bool = False,
     n_jobs: int = -1,
     verbose: int = 0,
     **kwargs,
@@ -70,7 +70,7 @@ def gcp_prepare_archive(
     ):
         Parallel(n_jobs=n_jobs, verbose=verbose, prefer="threads")(
             [
-                delayed(zarr.open)(fs.get_mapper(f"{storage_root}/{tile_id}"),"a")
+                delayed(zarr.open)(fs.get_mapper(f"{storage_root}/{tile_id}"), "a")
                 for tile_id, _ in items
             ],
         )
