@@ -14,6 +14,9 @@ Why does this file exist, and why not put this in __main__?
 
   Also see (1) from http://click.pocoo.org/5/setuptools/#setuptools-integration
 """
+import base64
+import datetime
+import hashlib
 import os
 import pickle
 
@@ -127,7 +130,7 @@ def preparer(cfg):
         cfg.constellations,
         f"{cfg.cloud.storage_prefix}/{cfg.cloud.storage_root}/{cfg.dataset_name}",
         cfg.tiler.bbox_size,
-        cfg.overwrite
+        cfg.overwrite,
     )
 
 
@@ -137,9 +140,13 @@ def deployer(cfg):
     extraction_tasks = pickle.load(open(cfg.extraction_tasks, "rb"))
 
     topic = f"projects/{cfg.cloud.project}/topics/{'-'.join([cfg.cloud.user_id, 'stacextractor'])}"
+    job_id = (
+        f"{cfg.cloud.user_id}_{datetime.datetime.now()}_{cfg.extraction_tasks[0:10]}"
+    )
 
     hydra.utils.call(
         cfg.deployer,
+        job_id,
         cfg.credentials,
         extraction_tasks,
         f"{cfg.cloud.storage_prefix}/{cfg.cloud.storage_root}/{cfg.dataset_name}",
@@ -185,7 +192,23 @@ def main(cfg: DictConfig):
             "plugins",
         ], "valid tasks are [build, stac, tile, schedule, prepare, deploy, plugins]"
 
-    logger.info(f"Running tasks {cfg.tasks}")
+    # prepare a hashed representation of key config values (start time, end time, constellations)
+    hash_vals = (
+        "_".join(
+            [cfg.start_date, cfg.end_date]
+            + [constellation for constellation in cfg.constellations],
+        )
+    ).encode("utf-8")
+
+    hash_str_b = hashlib.md5(hash_vals).digest()
+    hash_str = base64.urlsafe_b64encode(hash_str_b).decode("utf-8").rstrip("=")
+
+    cfg.item_collection = os.path.join(cfg.output, f"{hash_str}_item_collection.pkl")
+    cfg.extraction_tasks = os.path.join(cfg.output, f"{hash_str}_extraction_tasks.pkl")
+
+    pickle.dump(cfg, open(os.path.join(cfg.output, f"{hash_str}_cfg.pkl"), "wb"))
+
+    logger.info(f"Running tasks {cfg.tasks} for cfg {hash_str}")
 
     if "build" in cfg.tasks:
         build(cfg)
