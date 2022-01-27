@@ -1,6 +1,8 @@
 import concurrent
 import json
 
+from google.api_core import retry
+from google.auth import jwt
 from google.cloud import pubsub_v1
 from loguru import logger
 from satextractor.models.constellation_info import BAND_INFO
@@ -18,7 +20,18 @@ def deploy_tasks(
 
     logger.info(f"Deploying {len(extraction_tasks)} tasks with job_id: {job_id}")
 
-    publisher = pubsub_v1.PublisherClient.from_service_account_json(credentials)
+    credentials_json = json.load(open(credentials, "r"))
+
+    audience = "https://pubsub.googleapis.com/google.pubsub.v1.Publisher"
+    credentials_ob = jwt.Credentials.from_service_account_info(
+        credentials_json,
+        audience=audience,
+    )
+
+    publisher = pubsub_v1.PublisherClient(credentials=credentials_ob)
+
+    short_retry = retry.Retry(deadline=60)
+
     publish_futures = []
     for i, task in tqdm(enumerate(extraction_tasks)):
         extraction_task_data = task.serialize()
@@ -31,8 +44,14 @@ def deploy_tasks(
         )
         data = json.dumps(data, default=str)
 
-        publish_future = publisher.publish(topic, data.encode("utf-8"))
+        publish_future = publisher.publish(
+            topic,
+            data.encode("utf-8"),
+            retry=short_retry,
+        )
         publish_futures.append(publish_future)
+
+    logger.info(f"Generated {len(publish_futures)} futures.")
 
     # Wait for all the publish futures to resolve before exiting.
     concurrent.futures.wait(
