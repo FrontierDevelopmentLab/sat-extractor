@@ -2,6 +2,7 @@ import datetime
 
 import numpy as np
 import zarr
+from loguru import logger
 from zarr.errors import ArrayNotFoundError
 from zarr.errors import ContainsArrayError
 from zarr.errors import ContainsGroupError
@@ -71,14 +72,17 @@ def create_zarr_patch_structure(
                     ],
                 )
 
-                new_timesteps = np.array(sensing_times)[
-                    ~np.isin(sensing_times, existing_timestamps)
-                ]
+                max_existing = max(existing_timestamps)
+                new_timesteps = np.array(sensing_times)[sensing_times > max_existing]
 
-                if new_timesteps.shape[0] > 0:
-                    assert max(existing_timestamps) <= min(
-                        new_timesteps,
-                    ), "Sat-Extractor can only append more recent data or overwrite existing data. "
+                if new_timesteps.size != sensing_times.size:
+                    logger.warning(
+                        f"""
+                        Sat-Extractor can only append more recent data or overwrite existing data.
+                        Maximum existing date is {max_existing}
+                        and minimum new_timestep is {min(sensing_times)}.
+                        """,
+                    )
 
                 # get union of sensing times
                 timestamps_union = np.union1d(existing_timestamps, sensing_times)
