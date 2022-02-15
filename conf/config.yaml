@@ -4,9 +4,11 @@ output: ./output/${dataset_name}
 log_path: ${output}/main.log
 credentials: ${output}/token.json
 gpd_input: ${output}/aoi.geojson
-item_collection: ${output}/item_collection.geojson
+item_collection: ???
 tiles: ${output}/tiles.pkl
-extraction_tasks: ${output}/extraction_tasks.pkl
+extraction_tasks: ???
+
+overwrite: false
 
 start_date: 2020-01-01
 end_date: 2020-02-01
