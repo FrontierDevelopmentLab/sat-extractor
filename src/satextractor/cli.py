@@ -106,6 +106,9 @@ def scheduler(cfg):
         tiles=tiles,
         item_collection=cfg.item_collection,
         constellations=cfg.constellations,
+        overwrite=cfg.overwrite,
+        storage_path=f"{cfg.cloud.storage_prefix}/{cfg.cloud.storage_root}/{cfg.dataset_name}",
+        credentials=cfg.credentials,
         **cfg.scheduler,
     )
 

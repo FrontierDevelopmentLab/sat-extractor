@@ -79,7 +79,7 @@ def create_zarr_patch_structure(
                     logger.warning(
                         f"""
                         Sat-Extractor can only append more recent data or overwrite existing data.
-                        Maximum existing date is {max_existing}
+                        Maximum existing date for {timestamps_path} is {max_existing}
                         and minimum new_timestep is {min(sensing_times)}.
                         """,
                     )
