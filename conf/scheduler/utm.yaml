@@ -1,5 +1,5 @@
-_target_: satextractor.scheduler.get_scheduler
-name: create_tasks_by_splits
+_target_: satextractor.scheduler.gcp_scheduler.get_scheduler
+name: gcp_schedule
 split_m: 100000
 interval: 1
 n_jobs: -1
