@@ -1,11 +1,16 @@
+import datetime
+from collections import defaultdict
 from itertools import compress
+from typing import Any
 from typing import List
 from typing import Union
 
 import geopandas as gpd
+import numpy as np
 import pandas as pd
 import pystac
 import shapely
+import zarr
 from joblib import delayed
 from joblib import Parallel
 from loguru import logger
@@ -17,10 +22,51 @@ from satextractor.utils import get_dates_in_range
 from satextractor.utils import tqdm_joblib
 from sentinelhub import CRS
 from tqdm import tqdm
+from zarr.errors import ArrayNotFoundError
+from zarr.errors import ContainsGroupError
+from zarr.errors import PathNotFoundError
 
 
-def get_scheduler(name, **kwargs):
-    return eval(name)
+def filter_already_extracted_tasks(fs_mapper, storage_path, extraction_tasks):
+
+    tiles = set([tile.id for task in extraction_tasks for tile in task.tiles])
+    constellations = set([task.constellation for task in extraction_tasks])
+
+    tile_constellation_sensing_times = defaultdict(np.array)
+
+    # Get the existing dates for the task tiles and constellation
+    for tile_id in tiles:
+        for constellation in constellations:
+            try:
+                patch_constellation_path = f"{storage_path}/{tile_id}/{constellation}"
+
+                timestamps_path = f"{patch_constellation_path}/timestamps"
+                existing_timestamps = zarr.open_array(fs_mapper(timestamps_path), "r")[
+                    :
+                ]
+                existing_timestamps = np.array(
+                    [
+                        np.datetime64(datetime.datetime.fromisoformat(el))
+                        for el in existing_timestamps
+                    ],
+                )
+
+                tile_constellation_sensing_times[
+                    patch_constellation_path
+                ] = existing_timestamps
+            except (PathNotFoundError, ContainsGroupError, ArrayNotFoundError):
+                continue
+
+    non_extracted = []
+    for task in extraction_tasks:
+        first_tile = task.tiles[0]  # we only need one for this check
+        patch_constellation_path = (
+            f"{storage_path}/{first_tile.id}/{task.constellation}"
+        )
+        dates = tile_constellation_sensing_times.get(patch_constellation_path)
+        if dates is None or (task.sensing_time not in dates):
+            non_extracted.append(task)
+    return non_extracted
 
 
 def create_tasks_by_splits(
@@ -32,7 +78,9 @@ def create_tasks_by_splits(
     interval: int = 1,
     n_jobs: int = -1,
     verbose: int = 0,
-    **kwargs,
+    overwrite: bool = False,
+    storage_path: str = None,
+    fs_mapper: Any = None,
 ) -> List[ExtractionTask]:
     """Group tiles in splits of given split_m size. It creates a task per split
     with the tiles contained by that split and the intersection with the
@@ -137,6 +185,23 @@ def create_tasks_by_splits(
                             task_tracker += 1
 
     logger.info(f"There are a total of {len(tasks)} tasks")
+
+    if not overwrite:
+        logger.info(
+            "Filtering already extracted tasks. Checking existing dates in storage...",
+        )
+
+        filtered_extraction_tasks = filter_already_extracted_tasks(
+            fs_mapper,
+            storage_path,
+            tasks,
+        )
+
+        logger.info(
+            f"{len(tasks) - len(filtered_extraction_tasks)} tasks were filtered because they already exists in storage",
+        )
+        tasks = filtered_extraction_tasks
+
     return tasks
 
 
