@@ -33,7 +33,8 @@ def deploy_tasks(
     short_retry = retry.Retry(deadline=60)
 
     publish_futures = []
-    for i, task in tqdm(enumerate(extraction_tasks)):
+
+    for _, task in tqdm(enumerate(extraction_tasks)):
         extraction_task_data = task.serialize()
         data = dict(
             storage_gs_path=storage_path,
