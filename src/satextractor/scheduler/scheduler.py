@@ -103,6 +103,10 @@ def create_tasks_by_splits(
         List[ExtractionTask]: List of extraction tasks ready to deploy
     """
 
+    if not overwrite:
+        if not fs_mapper:
+            raise Exception("'fs_mapper' can't be None if 'overwrite' is set to False")
+
     logger.info("Loading items geojson...")
     if isinstance(item_collection, str):
         stac_items = pystac.ItemCollection.from_file(item_collection)
