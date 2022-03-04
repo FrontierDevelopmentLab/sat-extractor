@@ -64,7 +64,8 @@ def filter_already_extracted_tasks(fs_mapper, storage_path, extraction_tasks):
             f"{storage_path}/{first_tile.id}/{task.constellation}"
         )
         dates = tile_constellation_sensing_times.get(patch_constellation_path)
-        if dates is None or (task.sensing_time not in dates):
+        max_date = dates.max()
+        if dates is None or (task.sensing_time > max_date):
             non_extracted.append(task)
     return non_extracted
 

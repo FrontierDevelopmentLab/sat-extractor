@@ -73,9 +73,8 @@ def create_zarr_patch_structure(
                 )
 
                 max_existing = max(existing_timestamps)
-                new_timesteps = np.array(sensing_times)[sensing_times > max_existing]
 
-                if new_timesteps.size != sensing_times.size:
+                if max(sensing_times) <= max_existing:
                     logger.warning(
                         f"""
                         Sat-Extractor can only append more recent data or overwrite existing data.
