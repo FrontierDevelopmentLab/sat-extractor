@@ -1,8 +1,9 @@
 import datetime
 from collections import defaultdict
 from itertools import compress
-from typing import Any
+from typing import Callable
 from typing import List
+from typing import Optional
 from typing import Union
 
 import geopandas as gpd
@@ -64,8 +65,7 @@ def filter_already_extracted_tasks(fs_mapper, storage_path, extraction_tasks):
             f"{storage_path}/{first_tile.id}/{task.constellation}"
         )
         dates = tile_constellation_sensing_times.get(patch_constellation_path)
-        max_date = dates.max()
-        if dates is None or (task.sensing_time > max_date):
+        if dates is None or task.sensing_time > dates.max():
             non_extracted.append(task)
     return non_extracted
 
@@ -81,7 +81,7 @@ def create_tasks_by_splits(
     verbose: int = 0,
     overwrite: bool = False,
     storage_path: str = None,
-    fs_mapper: Any = None,
+    fs_mapper: Optional[Callable] = None,
 ) -> List[ExtractionTask]:
     """Group tiles in splits of given split_m size. It creates a task per split
     with the tiles contained by that split and the intersection with the
