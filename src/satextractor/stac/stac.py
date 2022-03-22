@@ -6,6 +6,8 @@ import pystac
 import shapely
 from google.cloud import bigquery
 from google.oauth2 import service_account
+from joblib import delayed
+from joblib import Parallel
 from pystac.extensions.eo import AssetEOExtension
 from pystac.extensions.eo import EOExtension
 from pystac.extensions.projection import ProjectionExtension
@@ -13,6 +15,8 @@ from satextractor.models.constellation_info import BAND_INFO
 from satextractor.models.constellation_info import LANDSAT_PROPERTIES
 from satextractor.models.constellation_info import MEDIA_TYPES
 from satextractor.utils import get_utm_epsg
+from satextractor.utils import tqdm_joblib
+from tqdm import tqdm
 
 
 def gcp_region_to_item_collection(
@@ -175,7 +179,10 @@ def get_sentinel_2_assets_df(
     return df
 
 
-def create_stac_item_collection_from_df(df: pd.DataFrame) -> pystac.ItemCollection:
+def create_stac_item_collection_from_df(
+    df: pd.DataFrame,
+    n_jobs: int = -1,
+) -> pystac.ItemCollection:
     """Given a df containing the results of a bigquery sentinel 2 job
     creates a stac item collection with all the assets
 
@@ -185,7 +192,18 @@ def create_stac_item_collection_from_df(df: pd.DataFrame) -> pystac.ItemCollecti
     Returns:
         pystac.ItemCollection: a item collection for the given region and dates
     """
-    items = pystac.ItemCollection([create_stac_item(row) for _, row in df.iterrows()])
+
+    with tqdm_joblib(
+        tqdm(
+            desc="parallel creating stack ItemCollection...",
+            total=len(df),
+        ),
+    ):
+        items = Parallel(n_jobs=n_jobs, verbose=0, prefer="threads")(
+            [delayed(create_stac_item)(row) for _, row in df.iterrows()],
+        )
+
+    items = pystac.ItemCollection(items)
     return items
 
 
