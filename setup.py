@@ -93,6 +93,7 @@ setup(
         "pystac[validation]~=1.1.0",
         "sentinelhub~=3.4.1",
         "pyarrow~=6.0.0",
+        "ijson~=3.1.4",
     ],
     extras_require={
         "dash": [
