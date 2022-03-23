@@ -206,8 +206,17 @@ def main(cfg: DictConfig):
     hash_str_b = hashlib.md5(hash_vals).digest()
     hash_str = base64.urlsafe_b64encode(hash_str_b).decode("utf-8").rstrip("=")
 
-    cfg.item_collection = os.path.join(cfg.output, f"{hash_str}_item_collection.pkl")
-    cfg.extraction_tasks = os.path.join(cfg.output, f"{hash_str}_extraction_tasks.pkl")
+    if cfg.item_collection is None:
+        cfg.item_collection = os.path.join(
+            cfg.output,
+            f"{hash_str}_item_collection.geojson",
+        )
+
+    if cfg.extraction_tasks is None:
+        cfg.extraction_tasks = os.path.join(
+            cfg.output,
+            f"{hash_str}_extraction_tasks.pkl",
+        )
 
     pickle.dump(cfg, open(os.path.join(cfg.output, f"{hash_str}_cfg.pkl"), "wb"))
 
