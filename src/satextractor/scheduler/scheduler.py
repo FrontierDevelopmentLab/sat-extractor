@@ -112,7 +112,7 @@ def create_tasks_by_splits(
 
     logger.info("Loading items geojson...")
     counter = 0
-    items = []
+    items: List[pystac.item.Item] = []
     tasks: List[ExtractionTask] = []
 
     if isinstance(item_collection, str):
@@ -123,16 +123,18 @@ def create_tasks_by_splits(
 
     for item in all_items:
         if counter < collection_chunks:
+            if not isinstance(item, pystac.item.Item):
+                item = pystac.Item.from_dict(item)
             items.append(item)
             counter += 1
         else:
             counter = 0
 
             stac_items = pystac.ItemCollection(
-                items=[pystac.Item.from_dict(it) for it in items],
+                items=items,
             )
             gdf = gpd.GeoDataFrame.from_features(
-                {"type": "FeatureCollection", "features": items},
+                [it.to_dict() for it in items],
             )
             items = []
 
