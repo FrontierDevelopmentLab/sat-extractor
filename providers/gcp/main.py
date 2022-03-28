@@ -1,5 +1,4 @@
 import base64
-import datetime
 import json
 import logging
 import os
@@ -8,17 +7,12 @@ import time
 import traceback
 
 import cattr
-import gcsfs
-import pystac
 from flask import Flask
 from flask import request
 from loguru import logger
-from satextractor.extractor import task_mosaic_patches
-from satextractor.models import BAND_INFO
-from satextractor.models import ExtractionTask
+from satextractor.extractor import extract_patches
 from satextractor.models import Tile
 from satextractor.monitor import GCPMonitor
-from satextractor.storer import store_patches
 
 app = Flask(__name__)
 
@@ -41,7 +35,7 @@ def format_stacktrace():
 
 
 @app.route("/", methods=["POST"])
-def extract_patches():
+def main():
 
     try:
         tic = time.time()
@@ -67,28 +61,11 @@ def extract_patches():
         bands = request_json["bands"]
         job_id = request_json["job_id"]
 
-        fs = gcsfs.GCSFileSystem()
-
         # ExtractionTask data
         extraction_task = request_json["extraction_task"]
         tiles = [cattr.structure(t, Tile) for t in extraction_task["tiles"]]
-        item_collection = pystac.ItemCollection.from_dict(
-            extraction_task["item_collection"],
-        )
-        band = extraction_task["band"]
         task_id = extraction_task["task_id"]
         constellation = extraction_task["constellation"]
-        sensing_time = datetime.datetime.fromisoformat(extraction_task["sensing_time"])
-        task = ExtractionTask(
-            task_id,
-            tiles,
-            item_collection,
-            band,
-            constellation,
-            sensing_time,
-        )
-
-        logger.info(f"Ready to extract {len(task.tiles)} tiles.")
 
         # do monitor if possible
         if "MONITOR_TABLE" in os.environ:
@@ -101,47 +78,23 @@ def extract_patches():
             )
             monitor.post_status(
                 msg_type="STARTED",
-                msg_payload=f"Extracting {len(task.tiles)}",
+                msg_payload=f"Extracting {len(tiles)}",
             )
         else:
             logger.warning(
                 "Environment variable MONITOR_TABLE not set. Unable to push task status to Monitor",
             )
 
-        archive_resolution = int(
-            min([b["gsd"] for _, b in BAND_INFO[constellation].items()]),
-        )
-
-        patches = task_mosaic_patches(
-            cloud_fs=fs,
-            task=task,
-            method="max",
-            resolution=archive_resolution,
-        )
-
-        logger.info(f"Ready to store {len(patches)} patches at {storage_gs_path}.")
-        store_patches(
-            fs.get_mapper,
-            storage_gs_path,
-            patches,
-            task,
-            bands,
-            archive_resolution,
-        )
+        num_patches = extract_patches(extraction_task, storage_gs_path, job_id, bands)
 
         toc = time.time()
-
         if "MONITOR_TABLE" in os.environ:
             monitor.post_status(
                 msg_type="FINISHED",
                 msg_payload=f"Elapsed time: {toc-tic}",
             )
 
-        logger.info(
-            f"{len(patches)} patches were succesfully stored in {storage_gs_path}.",
-        )
-
-        return f"Extracted {len(patches)} patches.", 200
+        return f"Extracted {num_patches} patches.", 200
 
     except Exception as e:
 
