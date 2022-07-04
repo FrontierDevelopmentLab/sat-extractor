@@ -149,11 +149,16 @@ In order to run **SatExtractor** we recommend to have a virtual env and a cloud 
 ### Installation
 
 
-1. Clone the repo
+1. Create a virtual en
+   ```sh
+   conda create -n satext python=3.8
+   conda activate satext
+   ```
+2. Clone the repo
    ```sh
    git clone https://github.com/FrontierDevelopmentLab/sat-extractor
    ```
-2. Install python packages
+3. Install python packages
    ```sh
    pip install .
    ```
@@ -183,7 +188,7 @@ Once a cloud provider user is set and the package is installed you'll need to gr
 mkdir output/cordoba
 ```
 2. Save the region GeoJSON as `aoi.geojson` and store it in the folder you just created.
-3. Open the `config.yaml` and you'll see something like this:
+3. Open the `conf/config.yaml` and you'll see something like this:
 
 ```yaml
 dataset_name: cordoba
@@ -229,9 +234,9 @@ hydra:
 
 The important here is to set the `dataset_name` to  `<your_region_name>`, define the `start_date` and `end_date` for your revisits, your `constellations` and the tasks to be run (you would want to run the `build` only one time and the comment it out.)
 
-**Important**: the `token.json` contains the needed credentials to access you cloud provider. In this example case it contains the gcp credentials. You can see instructions for getting it below in the [Authentication](#authentication) instructions.
+**Important**: the `token.json` contains the needed credentials to access you cloud provider. In this example case it contains the gcp credentials. You can see instructions for getting it below in the [Authentication](#authentication) instructions. You need to place `token.json` in the folder you just created (for instance `./output/cordoba`)
 
-3. Open the `cloud/<provider>.yaml` and add there your account info as in the default provided file. The `storage_root` must point to an existing bucket/bucket directory. `user_id` is simply used for naming resources.
+3. Open the `conf/cloud/<provider>.yaml` and add there your account info as in the default provided file. The `storage_root` must point to an existing bucket/bucket directory. `user_id` is simply used for naming resources.
    (optional): you can choose different configurations by changing modules configs: `builder`, `stac`, `tiler`, `scheduler`, `preparer`, etc. There you can change things like patch_size, chunk_size.
 
 4. Run `python src/satextractor/cli.py` and enjoy!
